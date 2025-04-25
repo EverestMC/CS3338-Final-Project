@@ -1,0 +1,5 @@
+GitHub Repo Link: https://github.com/EverestMC/CS3338-Final-Project.git
+
+Jira Link: https://calstatela-spr25-cs3338.atlassian.net/jira/software/projects/SCRUM/summary
+
+Topic: https://ascent.cysun.org/project/project/view/221
