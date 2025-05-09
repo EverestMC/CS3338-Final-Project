@@ -6,7 +6,7 @@ California State University, Los Angeles
 
 ## Team Members
 - @EverestMC  
-- @Imqgiine  
+- @Ceziech  
 - @Jamschowder  
 - @Miguel C  
 - @Narfrogerson23  
