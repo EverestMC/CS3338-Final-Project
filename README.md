@@ -51,3 +51,5 @@ To run and demonstrate the Auto-File System locally:
 - Cloud database hosting is in progress and will be finalized before deployment.
 - Ensure Docker is installed and running before executing setup steps(Need to confrim steps, commandline prompts, etc.)
 - For testing purposes, smaller upload sizes are recommended unless on a high-performance machine(which we do not have)
+
+## IMPORTANT: THIS README IS NOT FINAL
