@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  boxinputfunction:
+    image: python:3.11
+    container_name: box_input_function
+    volumes:
+      - ./lambda_functions:/app
+    working_dir: /app
+    command: python BoxInputFunction.py
+    environment:
+      NEXT_LAMBDA: boxfoldergetter
+      ERROR_LAMBDA: boxerrornotification
+      BOX_SECRET_NAME: box_credentials
+    depends_on:
+      - mock_box_api
+
+  boxfoldergetter:
+    image: python:3.11
+    container_name: box_folder_getter
+    volumes:
+      - ./lambda_functions:/app
+    working_dir: /app
+    command: python BoxFolderGetter.py
+    environment:
+      NEXT_LAMBDA: discoverybatesnamer
+      ERROR_LAMBDA: boxerrornotification
+      BOX_SECRET_NAME: box_credentials
+    depends_on:
+      - mock_box_api
+
+  discoverybatesnamer:
+    image: python:3.11
+    container_name: discovery_bates_namer
+    volumes:
+      - ./lambda_functions:/app
+    working_dir: /app
+    command: python DiscoveryBatesNamer.py
+    environment:
+      NEXT_LAMBDA: boxfileupdater
+      ERROR_LAMBDA: boxerrornotification
+    depends_on:
+      - mock_box_api
+
+  boxfileupdater:
+    image: python:3.11
+    container_name: box_file_updater
+    volumes:
+      - ./lambda_functions:/app
+    working_dir: /app
+    command: python BoxFileUpdater.py
+    environment:
+      ERROR_LAMBDA: boxerrornotification
+      BOX_SECRET_NAME: box_credentials
+    depends_on:
+      - mock_box_api
+
+  boxerrornotification:
+    image: python:3.11
+    container_name: box_error_notification
+    volumes:
+      - ./lambda_functions:/app
+    working_dir: /app
+    command: python BoxErrorNotification.py
+    environment:
+      BOX_SECRET_NAME: box_credentials
+      SOURCE_EMAIL: test@example.com
+    depends_on:
+      - mock_ses
+
+  mock_box_api:
+    image: stoplight/prism:4
+    container_name: mock_box_api
+    command: mock -h 0.0.0.0 https://api.box.com/openapi.yaml
+    ports:
+      - "4010:4010"
+
+  mock_ses:
+    image: mailhog/mailhog
+    container_name: mock_ses
+    ports:
+      - "1025:1025"
+      - "8025:8025"
