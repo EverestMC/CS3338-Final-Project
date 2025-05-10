@@ -1,0 +1,411 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\hypertarget{design-specification-document}{%
+\section{\texorpdfstring{\textbf{Design Specification
+Document}}{Design Specification Document}}\label{design-specification-document}}
+
+\textbf{Box.com Discovery Bates Namer: Cloud Integration}\\
+\textbf{Version:} 3.0.0\\
+\textbf{Prepared by:}\\
+Chiemela Eziechile-Nwoke, James Chau, Everest McNally, Benjamin Geiser,
+Miguel Campos\\
+\textbf{Santa Barbara Public Defender\textquotesingle s Office}\\
+\textbf{May 2025}
+
+\hypertarget{table-of-contents}{%
+\subsection{\texorpdfstring{\textbf{Table of
+Contents}}{Table of Contents}}\label{table-of-contents}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{System Overview}
+\item
+  \textbf{Component Breakdown}
+\item
+  \textbf{Docker Container Setup}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    3.1 Base Image \& OS
+  \item
+    3.2 Python Dependencies
+  \item
+    3.3 Azure SDK \& Box API Libraries
+  \item
+    3.4 System Tools \& Utilities
+  \end{itemize}
+\item
+  \textbf{Configuration Files}
+\item
+  \textbf{Environment Variables}
+\item
+  \textbf{Data Flow \& Processing Logic}
+\item
+  \textbf{Security \& Compliance Considerations}
+\item
+  \textbf{Error Handling \& Logging}
+\item
+  \textbf{Deployment \& Scaling Strategy}
+\end{enumerate}
+
+\hypertarget{system-overview}{%
+\subsection{\texorpdfstring{\textbf{1. System
+Overview}}{1. System Overview}}\label{system-overview}}
+
+The \textbf{Box.com Discovery Bates Namer} is a cloud-based microservice
+that:
+
+\begin{itemize}
+\tightlist
+\item
+  Listens for new PDF uploads in a Box.com folder
+\item
+  Extracts Bates numbers using \textbf{Azure Form Recognizer}
+\item
+  Renames and organizes files into case-specific directories
+\item
+  Maintains \textbf{CJIS/HIPAA compliance} with encryption and audit
+  logging
+\end{itemize}
+
+\hypertarget{component-breakdown}{%
+\subsection{\texorpdfstring{\textbf{2. Component
+Breakdown}}{2. Component Breakdown}}\label{component-breakdown}}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2002}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.4002}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3996}}@{}}
+\toprule()
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Component}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Purpose}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Technology}
+\end{minipage} \\
+\midrule()
+\endhead
+\textbf{File Listener} & Monitors Box.com for new uploads & Box Webhooks
++ Azure Event Grid \\
+\textbf{PDF Processor} & Handles file validation \& extraction & Python
++ PyPDF2 \\
+\textbf{Bates Extractor} & AI-based number recognition & Azure Form
+Recognizer SDK \\
+\textbf{File Renamer} & Applies naming conventions & Box API v2.0 \\
+\textbf{Error Notifier} & Alerts for failed processing & SendGrid
+(Email) + Twilio (SMS) \\
+\textbf{Audit Logger} & Tracks all file operations & Azure Log
+Analytics \\
+\bottomrule()
+\end{longtable}
+
+\hypertarget{docker-container-setup}{%
+\subsection{\texorpdfstring{\textbf{3. Docker Container
+Setup}}{3. Docker Container Setup}}\label{docker-container-setup}}
+
+\hypertarget{base-image-os}{%
+\subsubsection{\texorpdfstring{\textbf{3.1 Base Image \&
+OS}}{3.1 Base Image \& OS}}\label{base-image-os}}
+
+\texttt{FROM\ python:3.11-slim-bookworm}\strut \\
+\texttt{WORKDIR\ /app}\strut \\
+\texttt{RUN\ apt-get\ update\ \&\&\ apt-get\ install\ -y\ }\texttt{\textbackslash{}}\strut \\
+\texttt{\ \ \ \ poppler-utils\ \textbackslash{}\ \ \#\ For\ PDF\ processing}\strut \\
+\texttt{\ \ \ \ libssl-dev\ \textbackslash{}\ \ \ \ \ \#\ SSL/TLS\ support}\strut \\
+\texttt{\ \ \ \ gcc\ \ \ \ \ \ \ \ \ \ \ \ \ \#\ For\ compiling\ Python\ dependencies}
+
+\hypertarget{python-dependencies-requirements.txt}{%
+\subsubsection{\texorpdfstring{\textbf{3.2 Python Dependencies}
+(\texttt{requirements.txt})}{3.2 Python Dependencies (requirements.txt)}}\label{python-dependencies-requirements.txt}}
+
+\texttt{\#\ Core}\strut \\
+\texttt{azure-identity==1.12.0}\strut \\
+\texttt{azure-storage-blob==12.14.1}\strut \\
+\texttt{boxsdk==3.7.0}\strut \\
+\texttt{py}\texttt{thon-dotenv==1.0.0}\strut \\
+\strut \\
+\texttt{\#\ PDF\ Processing}\strut \\
+\texttt{pypdf2==3.0.1}\strut \\
+\texttt{pdfminer.six==20221105}\strut \\
+\texttt{azure-ai-formrecognizer==3.3.0}\strut \\
+\strut \\
+\texttt{\#\ Utilities}\strut \\
+\texttt{python-dateutil==2.8.2}\strut \\
+\texttt{pytz==2023.3}\strut \\
+\texttt{sendgrid==6.11.0}\strut \\
+\texttt{twilio==8.3.0}
+
+\hypertarget{azure-sdk-box-api-libraries}{%
+\subsubsection{\texorpdfstring{\textbf{3.3 Azure SDK \& Box API
+Libraries}}{3.3 Azure SDK \& Box API Libraries}}\label{azure-sdk-box-api-libraries}}
+
+\texttt{RUN\ pip\ install\ -\/-no-cache-dir\ -r\ req}\texttt{uirements.txt}
+
+\hypertarget{system-tools-utilities}{%
+\subsubsection{\texorpdfstring{\textbf{3.4 System Tools \&
+Utilities}}{3.4 System Tools \& Utilities}}\label{system-tools-utilities}}
+
+\texttt{\#\ Install\ cron\ for\ scheduled\ tasks\ (if\ needed)}\strut \\
+\texttt{RUN\ apt-get\ install\ -y\ cron}\strut \\
+\strut \\
+\texttt{\#\ Cleanup}\strut \\
+\texttt{RUN\ apt-get\ clean\ \&\&\ rm\ -rf\ /var/lib/apt/lists/*}
+
+\hypertarget{configuration-files}{%
+\subsection{\texorpdfstring{\textbf{4. Configuration
+Files}}{4. Configuration Files}}\label{configuration-files}}
+
+\hypertarget{config.yaml}{%
+\subsubsection{\texorpdfstring{\textbf{4.1}
+\texttt{config.yaml}}{4.1 config.yaml}}\label{config.yaml}}
+
+\texttt{box:}\strut \\
+\texttt{\ \ client\_id:\ "YOUR\_BOX\_CLIENT\_ID}\texttt{"}\strut \\
+\texttt{\ \ enterprise\_id:\ "YOUR\_ENTERPRISE\_ID"}\strut \\
+\texttt{\ \ upload\_folder:\ "Discovery\_Uploads"}\strut \\
+\strut \\
+\texttt{azure:}\strut \\
+\texttt{\ \ form\_recognizer\_endpoint:\ "https://\textless{}your-service\textgreater{}.cognitiveservices.azure.com/"}\strut \\
+\texttt{\ \ storage\_connection\_string:\ "DefaultEndpointsProtocol=..."}\strut \\
+\strut \\
+\texttt{logging:}\strut \\
+\texttt{\ \ level:\ "INFO"}\strut \\
+\texttt{\ \ audit\_log\_path:\ "/var/log/audit.log"}
+
+\hypertarget{dockerfile-additions}{%
+\subsubsection{\texorpdfstring{\textbf{4.2} \texttt{Dockerfile}
+\textbf{Additions}}{4.2 Dockerfile Additions}}\label{dockerfile-additions}}
+
+\texttt{COPY\ config.yaml\ /app/config.yaml}\strut \\
+\texttt{COPY\ src/\ /app/src/}
+
+\hypertarget{environment-variables}{%
+\subsection{\texorpdfstring{\textbf{5. Environment
+Variables}}{5. Environment Variables}}\label{environment-variables}}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3208}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3770}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3022}}@{}}
+\toprule()
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Variable}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Purpose}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Example}
+\end{minipage} \\
+\midrule()
+\endhead
+\texttt{BOX\_JWT\_PRIVATE\_KEY} & Box.com API authentication &
+(Base64-encoded key) \\
+\texttt{AZURE\_CLIENT\_SECRET} & Azure AD app credential &
+"abc123-..." \\
+\texttt{SENDGRID\_API\_KEY} & Email notifications & "SG.abc..." \\
+\texttt{TWILIO\_AUTH\_TOKEN} & SMS alerts & "xyz456" \\
+\bottomrule()
+\end{longtable}
+
+\hypertarget{data-flow-processing-logic}{%
+\subsection{\texorpdfstring{\textbf{6. Data Flow \& Processing
+Logic}}{6. Data Flow \& Processing Logic}}\label{data-flow-processing-logic}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{File Intake}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Box webhook triggers Azure Function
+  \item
+    File metadata validated (size/type)
+  \end{itemize}
+\item
+  \textbf{Bates Extraction}
+\end{enumerate}
+
+\begin{itemize}
+\item
+  \texttt{from\ azure.ai.formrecognizer\ import\ DocumentAnalysisClient}\strut \\
+  \texttt{client\ =\ DocumentAnalysisClient(endpoint,\ credential)}\strut \\
+  \texttt{poller\ =\ client.begin\_analyze\_document("prebuilt-document",\ file\_stream)}\strut \\
+  \texttt{result\ =\ poller.r}\texttt{esult()}
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\item
+  \textbf{File Renaming}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Format:
+    \texttt{{[}BATES\_START{]}-{[}BATES\_}\texttt{END{]}\_}\texttt{{[}CASE\_ID{]}\_{[}ORIGINAL\_NAME{]}.pdf}
+  \end{itemize}
+\end{enumerate}
+
+\hypertarget{security-compliance}{%
+\subsection{\texorpdfstring{\textbf{7. Security \&
+Compliance}}{7. Security \& Compliance}}\label{security-compliance}}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.2949}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.7051}}@{}}
+\toprule()
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Requirement}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Implementation}
+\end{minipage} \\
+\midrule()
+\endhead
+\textbf{Data Encryption} & AES-256 (Azure Storage Service Encryption) \\
+\textbf{Access Control} & Azure RBAC + Box Enterprise Permissions \\
+\textbf{Audit Logging} & Azure Monitor + Box Event Logs \\
+\textbf{Key Rotation} & Azure Key Vault auto-rotation \\
+\bottomrule()
+\end{longtable}
+
+\hypertarget{error-handling}{%
+\subsection{\texorpdfstring{\textbf{8. Error
+Handling}}{8. Error Handling}}\label{error-handling}}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.4154}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5846}}@{}}
+\toprule()
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Error Type}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Handling Method}
+\end{minipage} \\
+\midrule()
+\endhead
+Invalid PDF & Move to \texttt{/failed} folder + SMS alert \\
+Bates Number Not Found & Flag for manual review \\
+API Rate Limit & Exponential backoff retry \\
+\bottomrule()
+\end{longtable}
+
+\hypertarget{deployment-strategy}{%
+\subsection{\texorpdfstring{\textbf{9. Deployment
+Strategy}}{9. Deployment Strategy}}\label{deployment-strategy}}
+
+\hypertarget{docker-build}{%
+\subsubsection{\texorpdfstring{\textbf{9.1 Docker
+Build}}{9.1 Docker Build}}\label{docker-build}}
+
+\texttt{docker\ build\ -t\ bates-namer:3.0.}\texttt{0\ .}
+
+\hypertarget{azure-container-instance}{%
+\subsubsection{\texorpdfstring{\textbf{9.2 Azure Container
+Instance}}{9.2 Azure Container Instance}}\label{azure-container-instance}}
+
+\texttt{az\ container\ create\ \textbackslash{}}\strut \\
+\texttt{\ \ -\/-resource-group\ sbpdo-rg\ \textbackslash{}}\strut \\
+\texttt{\ \ -\/-name\ bates-namer\ \textbackslash{}}\strut \\
+\texttt{\ \ -\/-image\ bates-namer:3.0.0\ \textbackslash{}}\strut \\
+\texttt{\ \ -\/-environment-v}\texttt{ariables\ \textbackslash{}}\strut \\
+\texttt{\ \ \ \ BOX\_JWT\_PRIVATE\_KEY=\$BOX\_KEY\ \textbackslash{}}\strut \\
+\texttt{\ \ \ \ AZURE\_CLIENT\_SECRET=\$AZURE\_SECRET}
+
+\hypertarget{kubernetes-for-scaling}{%
+\subsubsection{\texorpdfstring{\textbf{9.3 Kubernetes (For
+Scaling)}}{9.3 Kubernetes (For Scaling)}}\label{kubernetes-for-scaling}}
+
+\texttt{\#\ deployment.yaml}\strut \\
+\texttt{replicas:\ 3}\strut \\
+\texttt{resources:}\strut \\
+\texttt{\ \ limits:}\strut \\
+\texttt{\ \ \ \ cpu:\ "1.0"}\strut \\
+\texttt{\ \ \ \ memory:\ "2Gi"}
+
+\hypertarget{appendix-full-dependency-tree}{%
+\subsection{\texorpdfstring{\textbf{Appendix: Full Dependency
+Tree}}{Appendix: Full Dependency Tree}}\label{appendix-full-dependency-tree}}
+
+\texttt{├──\ Python\ 3.11}\strut \\
+\texttt{├──\ Azure\ }\texttt{SDK}\strut \\
+\texttt{│\ \ \ ├──\ azure-identity}\strut \\
+\texttt{│\ \ \ ├──\ azure-storage-blob}\strut \\
+\texttt{│\ \ \ └──\ azure-ai-formrecognizer}\strut \\
+\texttt{├──\ Box\ SDK}\strut \\
+\texttt{│\ \ \ └──\ boxsdk\ (JWT\ auth)}\strut \\
+\texttt{├──\ PDF\ Processing}\strut \\
+\texttt{│\ \ \ ├──\ PyPDF2}\strut \\
+\texttt{│\ \ \ └──\ pdfminer.six}\strut \\
+\texttt{└──\ Notifications}\strut \\
+\texttt{\ \ \ \ ├──\ sendgrid}\strut \\
+\texttt{\ \ \ \ └──\ twilio}
+
+\end{document}
