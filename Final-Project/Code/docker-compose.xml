@@ -1,20 +1,23 @@
 version: '3.8'
 
 services:
+
+  # First Lambda - Handles initial file upload event and metadata extraction
   boxinputfunction:
-    image: python:3.11
+    image: python:3.11  # Using Python 3.11 base image
     container_name: box_input_function
     volumes:
-      - ./lambda_functions:/app
+      - ./lambda_functions:/app  # Mount local folder with Lambda code
     working_dir: /app
-    command: python BoxInputFunction.py
+    command: python BoxInputFunction.py  # Entry point script
     environment:
-      NEXT_LAMBDA: boxfoldergetter
-      ERROR_LAMBDA: boxerrornotification
-      BOX_SECRET_NAME: box_credentials
+      NEXT_LAMBDA: boxfoldergetter  # Lambda to call next
+      ERROR_LAMBDA: boxerrornotification  # Lambda to call on error
+      BOX_SECRET_NAME: box_credentials  # Name of the secret configuration
     depends_on:
-      - mock_box_api
+      - mock_box_api  # Wait until Box API mock is available
 
+  # Second Lambda - Determines folder context from Box metadata
   boxfoldergetter:
     image: python:3.11
     container_name: box_folder_getter
@@ -29,6 +32,7 @@ services:
     depends_on:
       - mock_box_api
 
+  # Third Lambda - Extracts Bates numbers from PDFs and generates new filenames
   discoverybatesnamer:
     image: python:3.11
     container_name: discovery_bates_namer
@@ -42,6 +46,7 @@ services:
     depends_on:
       - mock_box_api
 
+  # Fourth Lambda - Renames and moves files in Box to their destination folder
   boxfileupdater:
     image: python:3.11
     container_name: box_file_updater
@@ -55,6 +60,7 @@ services:
     depends_on:
       - mock_box_api
 
+  # Fifth Lambda - Sends error notifications using mock SES (MailHog here)
   boxerrornotification:
     image: python:3.11
     container_name: box_error_notification
@@ -63,21 +69,23 @@ services:
     working_dir: /app
     command: python BoxErrorNotification.py
     environment:
-      BOX_SECRET_NAME: box_credentials
-      SOURCE_EMAIL: test@example.com
+      BOX_SECRET_NAME: box_credentials  # Secret manager reference
+      SOURCE_EMAIL: test@example.com  # Email used as sender for SES
     depends_on:
       - mock_ses
 
+  # Simulated Box API server using OpenAPI/Prism for local testing
   mock_box_api:
     image: stoplight/prism:4
     container_name: mock_box_api
-    command: mock -h 0.0.0.0 https://api.box.com/openapi.yaml
+    command: mock -h 0.0.0.0 https://api.box.com/openapi.yaml  # Replace with actual OpenAPI spec if available
     ports:
-      - "4010:4010"
+      - "4010:4010"  # Port exposed for the mock Box API
 
+  # MailHog simulates AWS SES locally; view emails via browser
   mock_ses:
     image: mailhog/mailhog
     container_name: mock_ses
     ports:
-      - "1025:1025"
-      - "8025:8025"
+      - "1025:1025"  # SMTP port
+      - "8025:8025"  # Web UI to view sent emails (http://localhost:8025)
