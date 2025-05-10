@@ -1,0 +1,125 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\title{Box.com Discovery Bates Namer \\ Snapshot Objectives}
+\author{Santa Barbara Public Defender's Office}
+\date{May 2025}
+
+\begin{document}
+
+\maketitle
+
+\section*{Snapshot Overview}
+This document defines the objectives for each development snapshot of the Box.com Discovery Bates Namer system, corresponding to TestRail test suites:
+
+\begin{itemize}
+    \item \textbf{Snapshot 1}: Core Functionality Validation
+    \item \textbf{Snapshot 2}: Bates Extraction Implementation
+    \item \textbf{Snapshot 3}: Compliance \& Error Handling
+    \item \textbf{Snapshot 4}: UAT \& Deployment Preparation
+\end{itemize}
+
+\section*{Snapshot 1: Core Functionality Validation}
+\label{sec:snapshot1}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Objective 1.1}: Establish Box.com API integration
+    \begin{itemize}
+        \item Configure webhook notifications for \texttt{Discovery\_Uploads} folder
+        \item Validate file metadata extraction (Test Case TC-101)
+    \end{itemize}
+    
+    \item \textbf{Objective 1.2}: Implement basic PDF validation
+    \begin{itemize}
+        \item Reject non-PDF files (Test Case TC-102)
+        \item Enforce 10KB-100MB size limits
+        \item Log validation errors to Azure Monitor
+    \end{itemize}
+    
+    \item \textbf{Objective 1.3}: Create temporary storage pipeline
+    \begin{itemize}
+        \item Configure Azure Blob Storage container
+        \item Implement 72-hour auto-purge policy
+    \end{itemize}
+\end{itemize}
+
+\section*{Snapshot 2: Bates Extraction Implementation}
+\label{sec:snapshot2}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Objective 2.1}: Deploy AI extraction
+    \begin{itemize}
+        \item Train Azure Form Recognizer model (5000 samples)
+        \item Achieve ≥85\% accuracy (Test Case TC-201)
+    \end{itemize}
+    
+    \item \textbf{Objective 2.2}: Implement fallback mechanisms
+    \begin{itemize}
+        \item Regex pattern for standard Bates formats (Test Case TC-202)
+        \item Footer text analysis as tertiary method
+    \end{itemize}
+    
+    \item \textbf{Objective 2.3}: Performance benchmarking
+    \begin{itemize}
+        \item Process 500 files/hour throughput
+        \item Maintain <10s latency per file (95th percentile)
+    \end{itemize}
+\end{itemize}
+
+\section*{Snapshot 3: Compliance \& Error Handling}
+\label{sec:snapshot3}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Objective 3.1}: Enforce security standards
+    \begin{itemize}
+        \item Verify AES-256 encryption (Test Case TC-301)
+        \item Implement CJIS audit logging requirements
+    \end{itemize}
+    
+    \item \textbf{Objective 3.2}: Error notification system
+    \begin{itemize}
+        \item Configure SendGrid/Twilio integration (Test Case TC-302)
+        \item Implement 3-tier escalation policy
+    \end{itemize}
+    
+    \item \textbf{Objective 3.3}: Stress testing
+    \begin{itemize}
+        \item Handle 1000 concurrent file uploads
+        \item Validate auto-scaling behavior
+    \end{itemize}
+\end{itemize}
+
+\section*{Snapshot 4: UAT \& Deployment Preparation}
+\label{sec:snapshot4}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Objective 4.1}: Finalize audit system
+    \begin{itemize}
+        \item Log all file operations (Test Case TC-401)
+        \item Implement 7-year retention policy
+    \end{itemize}
+    
+    \item \textbf{Objective 4.2}: User acceptance testing
+    \begin{itemize}
+        \item Validate end-to-end workflow (Test Case TC-402)
+        \item Obtain sign-off from legal staff
+    \end{itemize}
+    
+    \item \textbf{Objective 4.3}: Prepare deployment artifacts
+    \begin{itemize}
+        \item Create Docker containers for all components
+        \item Document rollback procedures
+    \end{itemize}
+\end{itemize}
+
+\section*{Traceability Matrix}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Snapshot} & \textbf{TestRail Section} & \textbf{Key Test Cases} \\ \hline
+1 & Core Functionality & TC-101, TC-102 \\ \hline
+2 & Bates Extraction & TC-201, TC-202 \\ \hline
+3 & Compliance & TC-301, TC-302 \\ \hline
+4 & UAT & TC-401, TC-402 \\ \hline
+\end{tabular}
+
+\end{document}
